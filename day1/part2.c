@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../quicksort.h"
+#include "../util.h"
 
 
 int main() {
@@ -21,15 +21,22 @@ int main() {
 		one_size ++;
 		two_size ++;
 	}
-	quicksort_long(one_vec, one_size);
 	quicksort_long(two_vec, two_size);
 	long res = 0;
 	for (int x = 0; x < one_size; x ++) {
-		long sim = 0;
-		for (int y = 0; y < two_size; y ++) {
-			if (two_vec[y] == one_vec[x]) {
-				sim ++;
+		int bindex = binsearch_long(two_vec, two_size, one_vec[x]); // get an index into two_vec
+		int sim = 0;
+		for (int i = bindex; i >= 0; i --) {
+			if (two_vec[i] != one_vec[x]) {
+				break;
 			}
+			sim ++;
+		}
+		for (int i = bindex + 1; i < two_size; i ++) {
+			if (two_vec[i] != one_vec[x]) {
+				break;
+			}
+			sim ++;
 		}
 		res += sim * one_vec[x];
 	}

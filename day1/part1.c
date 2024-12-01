@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../quicksort.h"
-
+#include "../util.h"
 
 
 int main() {
