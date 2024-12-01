@@ -1,10 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
+#define DAY 1
+#define PART 1
 #include "../util.h"
 
 
-int main() {
-	printf("Advent of Code day 1 part 1\n");
+long aoc() {
 	FILE* f = fopen("inputs.txt", "r");
 	long one, two;
 	long* one_vec = malloc(2000 * sizeof(long)); // an homage to the age-old adage - the missile's memory leak
@@ -27,5 +26,5 @@ int main() {
 	for (int x = 0; x < one_size; x ++) {
 		res += abs(one_vec[x] - two_vec[x]);
 	}
-	printf("result: %d\n", res);
+	return res;
 }

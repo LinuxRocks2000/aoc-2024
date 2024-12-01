@@ -1,3 +1,11 @@
+// utilities for my advent of code solutions
+// files using util.h should define void aoc() rather than int main(), and define the macros DAY and PART.
+#include <sys/time.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // quicksort over a vector of longs
 // lomuto variant
 // eventually I'll hafta make it generic somehow, in C's special awful way (accept a raw bytearray, an element size, the length, and a comparator function?)
@@ -52,14 +60,44 @@ int binsearch_long(long* array, int length, long el) {
 		}
 		return -1;
 	}
-	long pivot = length / 2;
-	if (array[pivot] == el) {
+	int pivot = length / 2;
+	long pivotal_value = array[pivot];
+	if (pivotal_value == el) {
 		return pivot;
 	}
-	else if (array[pivot] < el) { // we need to search the upper half
-		return pivot + binsearch_long(&array[pivot], length - pivot, el);
-	}
-	else { // we need to search the lower half
+	else if (pivotal_value > el) { // we need to search the lower half
 		return binsearch_long(array, pivot, el);
 	}
+	else { // we need to search the upper half
+		int r = binsearch_long(&array[pivot], length - pivot, el);
+		if (r == -1) {
+			return -1;
+		}
+		return pivot + r;
+	}
+}
+
+
+uint64_t timestamp() {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    return tv.tv_sec*(uint64_t)1000000+tv.tv_usec;
+}
+
+
+long aoc();
+
+int main() {
+	printf("=== AOC2024 DAY %d PART %d ===\n", DAY, PART);
+	#ifdef TIME_REPEAT
+	printf("Running program for %d cycles\n", TIME_REPEAT);
+	uint64_t start = timestamp();
+	for (int i = 0; i < TIME_REPEAT; i ++) {
+		aoc();
+	}
+	uint64_t duration = timestamp() - start;
+	printf("Average duration: %dµs\n", duration / TIME_REPEAT);
+	#else
+	printf("DAY %d PART %d SOLUTION: %d\n", DAY, PART, aoc());
+	#endif
 }
