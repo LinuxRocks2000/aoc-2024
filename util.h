@@ -5,6 +5,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+
+
+// insertion sort over a vector of longs
+// faster than quicksort for small arrays, so we can cut off quite a few cpu cycles by using insertion sort for quicksort partitions under a certain size
+void insertion_sort_long(long* array, int size) {
+	if (size < 2) {
+		return;
+	}
+	for (int track = 1; track < size; track ++) {
+		int to; // the index that we're going to swap into
+		for (to = track - 1; to >= 0; to --) {
+			if (array[to] < array[track]) {
+				break;
+			}
+		}
+		to ++;
+		long swap = array[track];
+		for (int i = track - 1; i >= to; i --) {
+			array[i + 1] = array[i];
+		}
+		array[to] = swap;
+	}
+}
 
 // quicksort over a vector of longs
 // lomuto variant
@@ -19,6 +44,10 @@ void quicksort_long(long* array, int size) {
 			array[1] = array[0];
 			array[0] = swap;
 		}
+		return;
+	}
+	if (size <= 22) {
+		insertion_sort_long(array, size);
 		return;
 	}
 	long pivot = 0;
@@ -49,6 +78,8 @@ void quicksort_long(long* array, int size) {
 // will freak out for unsorted arrays
 // returns -1 if the element is not present
 
+
+#ifdef RECURSIVE_BINSEARCH
 int binsearch_long(long* array, int length, long el) {
 	if (length == 0) {
 		return -1;
@@ -75,6 +106,27 @@ int binsearch_long(long* array, int length, long el) {
 		return pivot + r;
 	}
 }
+#else
+int binsearch_long(long* array, int length, long el) {
+	int pivot = length/2;
+	int start = 0;
+	while (1) {
+		if (array[pivot] == el) {
+			return pivot;
+		}
+		else if (array[pivot] < el) {
+			start = pivot;
+		}
+		else {
+			length = pivot;
+		}
+		if (length - start < 2) {
+			return -1;
+		}
+		pivot = start + (length - start)/2;
+	}
+}
+#endif
 
 
 uint64_t timestamp() {

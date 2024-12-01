@@ -1,8 +1,7 @@
-//#define TIME_REPEAT 10000
+#define TIME_REPEAT 40000
 #define DAY 1
 #define PART 2
 #include "../util.h"
-
 
 
 long aoc(FILE* f) {
@@ -13,6 +12,7 @@ long aoc(FILE* f) {
 	long* two_vec = malloc(2000 * sizeof(long)); // allocating in place is, with few exceptions, a better strategy than ever reallocating. because the amounts are so small (just a few dozens of kbs!), this is fine, and much more performant than 2000+ reallocations!
 	memset(one_vec, 0, 2000 * sizeof(long));
 	memset(two_vec, 0, 2000 * sizeof(long));
+	// interesting to note is that putting one_vec and two_vec on stack makes no noticeable performance difference compared to heap-allocating them, even over 40,000 iterations
 	long one_size = 0;
 	long two_size = 0;
 	while (1) {
