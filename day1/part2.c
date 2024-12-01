@@ -1,11 +1,11 @@
-#define TIME_REPEAT 10000
+//#define TIME_REPEAT 10000
 #define DAY 1
 #define PART 2
 #include "../util.h"
 
 
-long aoc() {
-	FILE* f = fopen("inputs.txt", "r");
+
+long aoc(FILE* f) {
 	long one, two;
 	one = 0;
 	two = 0;
@@ -49,6 +49,5 @@ long aoc() {
 	}
 	free(one_vec);
 	free(two_vec);
-	fclose(f);
 	return res;
 }

@@ -34,7 +34,6 @@ void quicksort_long(long* array, int size) {
 				array[pivot + 1] = swap;
 				pivot ++;
 				did_swap = 1;
-				break;
 			}
 		}
 		if (!did_swap) {
@@ -85,19 +84,21 @@ uint64_t timestamp() {
 }
 
 
-long aoc();
+long aoc(FILE* f);
 
 int main() {
+	FILE* f = fopen("inputs.txt", "r");
 	printf("=== AOC2024 DAY %d PART %d ===\n", DAY, PART);
 	#ifdef TIME_REPEAT
 	printf("Running program for %d cycles\n", TIME_REPEAT);
 	uint64_t start = timestamp();
 	for (int i = 0; i < TIME_REPEAT; i ++) {
-		aoc();
+		aoc(f);
+		rewind(f);
 	}
 	uint64_t duration = timestamp() - start;
 	printf("Average duration: %dµs\n", duration / TIME_REPEAT);
 	#else
-	printf("DAY %d PART %d SOLUTION: %d\n", DAY, PART, aoc());
+	printf("DAY %d PART %d SOLUTION: %d\n", DAY, PART, aoc(f));
 	#endif
 }
