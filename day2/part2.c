@@ -1,5 +1,5 @@
 #define DAY 2
-#define PART 1
+#define PART 2
 #include "../util.h"
 
 
@@ -25,8 +25,8 @@ int safecheck(int* vec, int len, int check_subfails) {
 		}
 	}
 	if (check_subfails) {
+		int* test = malloc(sizeof(int) * (len - 1));
 		for (int i = 0; i < len; i ++) {
-			int* test = malloc(sizeof(int) * (len - 1));
 			for (int j = 0; j < len - 1; j ++) {
 				if (j < i) {
 					test[j] = vec[j];
@@ -38,8 +38,8 @@ int safecheck(int* vec, int len, int check_subfails) {
 			if (safecheck(test, len - 1, 0)) {
 				return 1;
 			}
-			free(test);
 		}
+		free(test);
 	}
 	if (early_abort) {
 		return 0;
@@ -54,7 +54,7 @@ long aoc(FILE* f) {
 	int lbuf_len = 0;
 	long ret = 0;
 	while (!feof(f)) {
-		fscanf(f, "%d", &v);
+		fscanf(f, "%d", &v); // I've got a serious fscanf fetish
 		lbuf[lbuf_len] = v;
 		lbuf_len += 1;
 		char c = fgetc(f);
