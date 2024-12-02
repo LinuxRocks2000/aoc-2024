@@ -3,8 +3,7 @@
 #include "../util.h"
 
 
-long aoc() {
-	FILE* f = fopen("inputs.txt", "r");
+long aoc(FILE* f) {
 	long one, two;
 	long* one_vec = malloc(2000 * sizeof(long)); // an homage to the age-old adage - the missile's memory leak
 	long* two_vec = malloc(2000 * sizeof(long)); // allocating in place is, with few exceptions, a better strategy than ever reallocating. because the amounts are so small (just a few dozens of kbs!), this is fine, and much more performant than 2000+ reallocations!
