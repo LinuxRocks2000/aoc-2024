@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 
 
@@ -135,6 +136,83 @@ uint64_t timestamp() {
     return tv.tv_sec*(uint64_t)1000000+tv.tv_usec;
 }
 
+
+#define BUFREADER_BUF_CAPACITY 64
+
+/*
+typedef struct {
+	char* buffer;
+	int lower_ptr;
+	int upper_ptr;
+	FILE* file;
+} bufreader; // ring buffer that consumes a FILE* stream
+
+
+bufreader bufreader_new(FILE* f) {
+	return bufreader {
+		malloc(BUFREADER_BUF_CAPACITY),
+		0,
+		0,
+		f
+	};
+}
+
+
+void bufreader_fill(bufreader* buf) {
+	buf -> upper_ptr += fread(buf -> buffer + buf -> upper_ptr, 1, BUFREADER_BUF_CAPACITY - buf -> upper_ptr, buf -> file);
+	if (buf -> upper_ptr == BUFREADER_BUF_CAPACITY && buf -> lower_ptr > 0) {
+		buf -> upper_ptr = fread(buf -> buffer, 1, buf -> lower_ptr, buf -> file);
+	}
+}
+
+
+int bufreader_size(bufreader* buf) {
+	int r = buf -> upper_ptr - buf -> lower_ptr;
+	if (r < 0) {
+		return BUFREADER_BUF_CAPACITY + r;
+	}
+	return r;
+}
+
+
+char bgetc(bufreader* buf) {
+	if (bufreader_size(buf) == 0) {
+		bufreader_fill(buf);
+	}
+	if (bufreader_size(buf) == 0) {
+		return 0; // EOF
+	}
+	char r = buf -> buffer[buf -> lower_ptr];
+	buf -> lower_ptr ++;
+	if (buf -> lower_ptr == BUFREADER_BUF_CAPACITY) {
+		buf -> lower_ptr = 0;
+	}
+	return r;
+}
+
+
+int bsearchf(bufreader* buf, const char* format, ...) { // UNFINISHED: search through a string until a precise format is matched, filling variadic arguments with the appropriate values
+	// while similar, this is not the same thing as sscanf! sscanf's behavior makes a number of assumptions about the template and the target data that we aren't making here
+	va_list argp;
+	va_start(argp, format);
+	while (*format != 0) {
+		if (*format == '%') {
+			format++;
+			if (*format == 'd') {
+				long val = 0;
+				long* target = va_arg(argp, int);
+				while (*format >= '0' && *format <= '9') {
+					val *= 10;
+					val += *format - '0';
+					format++;
+				}
+				*target = val;
+			}
+		}
+	}
+	va_end(argp);
+}
+*/
 
 long aoc(FILE* f);
 
