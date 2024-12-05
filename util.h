@@ -82,8 +82,8 @@ void quicksort_long(long* array, int size) {
 
 
 #define CMP_EQUAL 0
-#define CMP_LESSTHAN 1 // one < two
-#define CMP_MORETHAN 2 // one > two
+#define CMP_LESSTHAN -1 // one < two
+#define CMP_MORETHAN 1 // one > two
 
 void anyswap(char* array, int element_size, int one, int two) {
 	for (int i = 0; i < element_size; i ++) {
@@ -93,18 +93,21 @@ void anyswap(char* array, int element_size, int one, int two) {
 	}
 }
 
-void quicksort_any(char* array, int element_size, int len, int (*comparator)(void*, void*)) { // because of the indirection, this is many times slower than the primitive quicksort functions, but
-// can be used to sort abstract data
+int quicksort_any(char* array, int element_size, int len, int (*comparator)(void*, void*)) { // because of the indirection, this is many times slower than the primitive quicksort functions, but
+	// can be used to sort abstract data
+	// returns the number of swaps performed
 	if (len < 2) {
-		return;
+		return 0;
 	}
 	if (len == 2) {
 		if (comparator(array, array + element_size) == CMP_MORETHAN) {
 			anyswap(array, element_size, 0, 1);
+			return 1;
 		}
-		return;
+		return 0;
 	}
 	long pivot = 0;
+	int swaps = 0;
 	while (1) {
 		int did_swap = 0;
 		for (int i = pivot + 1; i < len; i ++) {
@@ -113,14 +116,16 @@ void quicksort_any(char* array, int element_size, int len, int (*comparator)(voi
 				anyswap(array, element_size, pivot, pivot + 1);
 				pivot ++;
 				did_swap = 1;
+				swaps += 2;
 			}
 		}
 		if (!did_swap) {
 			break;
 		}
 	}
-	quicksort_any(array, element_size, pivot, comparator);
-	quicksort_any(array + (pivot + 1) * element_size, element_size, len - pivot - 1, comparator);
+	swaps += quicksort_any(array, element_size, pivot, comparator);
+	swaps += quicksort_any(array + (pivot + 1) * element_size, element_size, len - pivot - 1, comparator);
+	return swaps;
 }
 
 

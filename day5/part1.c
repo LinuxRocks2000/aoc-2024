@@ -23,19 +23,6 @@ int rule_t_cmp(void* _one, void* _two) { // compare only the right half of the r
 }
 
 
-int cmp_long(void* _one, void* _two) {
-	long one = *(long*)_one;
-	long two = *(long*)_two;
-	if (one < two) {
-		return CMP_LESSTHAN;
-	}
-	if (one > two) {
-		return CMP_MORETHAN;
-	}
-	return CMP_EQUAL;
-}
-
-
 long aoc(FILE* f) {
 	rule_t rules[1024 * 64];
 	int rc = 0;
@@ -79,21 +66,6 @@ long aoc(FILE* f) {
 			tbuf++;
 		}
 		int valid = 1;
-		/*for (int x = 0; x < tc - 1; x ++) {
-			for (int rule = 0; rule < rc; rule ++) {
-				if (rr[rule] == test_reprint[x]) {
-					for (int y = x + 1; y < tc; y ++) {
-						if (rl[rule] == test_reprint[y]) {
-							valid = 0;
-							break;
-						}
-					}
-					if (!valid) {
-						break;
-					}
-				}
-			}
-		}*/
 		for (int x = 0; x < tc - 1; x ++) {
 			rule_t rule_target = { 0, test_reprint[x] };
 			int rule_root_i = binsearch_any(rules, sizeof(rule_t), rc, &rule_target, rule_t_cmp); // this is some index in a blob of rules that pertain to test_reprint[x]
