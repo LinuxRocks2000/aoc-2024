@@ -9,6 +9,12 @@
 #include <stdarg.h>
 
 
+void fill_random_longs(long* array, int len, long smax) {
+	for (int i = 0; i < len; i ++) {
+		array[i] = random() % smax;
+	}
+}
+
 
 // insertion sort over a vector of longs
 // faster than quicksort for small arrays, so we can cut off quite a few cpu cycles by using insertion sort for quicksort partitions under a certain size
@@ -47,7 +53,7 @@ void quicksort_long(long* array, int size) {
 		}
 		return;
 	}
-	if (size <= 22) {
+	if (size <= 22) { // this number was gleaned experimentally; see the performance comparison code
 		insertion_sort_long(array, size);
 		return;
 	}
@@ -72,6 +78,49 @@ void quicksort_long(long* array, int size) {
 	}
 	quicksort_long(array, pivot);
 	quicksort_long(&array[pivot + 1], size - pivot - 1);
+}
+
+
+#define CMP_EQUAL 0
+#define CMP_LESSTHAN 1 // one < two
+#define CMP_MORETHAN 2 // one > two
+
+void anyswap(char* array, int element_size, int one, int two) {
+	for (int i = 0; i < element_size; i ++) {
+		char swap = array[one * element_size + i];
+		array[one * element_size + i] = array[two * element_size + i];
+		array[two * element_size + i] = swap;
+	}
+}
+
+void quicksort_any(char* array, int element_size, int len, int (*comparator)(void*, void*)) { // because of the indirection, this is many times slower than the primitive quicksort functions, but
+// can be used to sort abstract data
+	if (len < 2) {
+		return;
+	}
+	if (len == 2) {
+		if (comparator(array, array + element_size) == CMP_MORETHAN) {
+			anyswap(array, element_size, 0, 1);
+		}
+		return;
+	}
+	long pivot = 0;
+	while (1) {
+		int did_swap = 0;
+		for (int i = pivot + 1; i < len; i ++) {
+			if (comparator(array + element_size * i, array + element_size * pivot) == CMP_LESSTHAN) {
+				anyswap(array, element_size, pivot + 1, i);
+				anyswap(array, element_size, pivot, pivot + 1);
+				pivot ++;
+				did_swap = 1;
+			}
+		}
+		if (!did_swap) {
+			break;
+		}
+	}
+	quicksort_any(array, element_size, pivot, comparator);
+	quicksort_any(array + (pivot + 1) * element_size, element_size, len - pivot - 1, comparator);
 }
 
 
@@ -130,89 +179,34 @@ int binsearch_long(long* array, int length, long el) {
 #endif
 
 
+int binsearch_any(void* array, int element_size, int length, void* target, int (*cmp)(void*, void*)) { // much less efficient than binsearch_long, but works on abstract data
+	int pivot = length / 2;
+	int start = 0;
+	while (1) {
+		int r = cmp(array + pivot * element_size, target);
+		if (r == CMP_EQUAL) {
+			return pivot;
+		}
+		else if (r == CMP_LESSTHAN) {
+			start = pivot;
+		}
+		else {
+			length = pivot;
+		}
+		if (length - start < 2) {
+			return -1;
+		}
+		pivot = start + (length - start) / 2;
+	}
+}
+
+
 uint64_t timestamp() {
     struct timeval tv;
     gettimeofday(&tv,NULL);
     return tv.tv_sec*(uint64_t)1000000+tv.tv_usec;
 }
 
-
-#define BUFREADER_BUF_CAPACITY 64
-
-/*
-typedef struct {
-	char* buffer;
-	int lower_ptr;
-	int upper_ptr;
-	FILE* file;
-} bufreader; // ring buffer that consumes a FILE* stream
-
-
-bufreader bufreader_new(FILE* f) {
-	return bufreader {
-		malloc(BUFREADER_BUF_CAPACITY),
-		0,
-		0,
-		f
-	};
-}
-
-
-void bufreader_fill(bufreader* buf) {
-	buf -> upper_ptr += fread(buf -> buffer + buf -> upper_ptr, 1, BUFREADER_BUF_CAPACITY - buf -> upper_ptr, buf -> file);
-	if (buf -> upper_ptr == BUFREADER_BUF_CAPACITY && buf -> lower_ptr > 0) {
-		buf -> upper_ptr = fread(buf -> buffer, 1, buf -> lower_ptr, buf -> file);
-	}
-}
-
-
-int bufreader_size(bufreader* buf) {
-	int r = buf -> upper_ptr - buf -> lower_ptr;
-	if (r < 0) {
-		return BUFREADER_BUF_CAPACITY + r;
-	}
-	return r;
-}
-
-
-char bgetc(bufreader* buf) {
-	if (bufreader_size(buf) == 0) {
-		bufreader_fill(buf);
-	}
-	if (bufreader_size(buf) == 0) {
-		return 0; // EOF
-	}
-	char r = buf -> buffer[buf -> lower_ptr];
-	buf -> lower_ptr ++;
-	if (buf -> lower_ptr == BUFREADER_BUF_CAPACITY) {
-		buf -> lower_ptr = 0;
-	}
-	return r;
-}
-
-
-int bsearchf(bufreader* buf, const char* format, ...) { // UNFINISHED: search through a string until a precise format is matched, filling variadic arguments with the appropriate values
-	// while similar, this is not the same thing as sscanf! sscanf's behavior makes a number of assumptions about the template and the target data that we aren't making here
-	va_list argp;
-	va_start(argp, format);
-	while (*format != 0) {
-		if (*format == '%') {
-			format++;
-			if (*format == 'd') {
-				long val = 0;
-				long* target = va_arg(argp, int);
-				while (*format >= '0' && *format <= '9') {
-					val *= 10;
-					val += *format - '0';
-					format++;
-				}
-				*target = val;
-			}
-		}
-	}
-	va_end(argp);
-}
-*/
 
 long aoc(FILE* f);
 
