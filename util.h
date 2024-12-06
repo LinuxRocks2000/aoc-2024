@@ -222,7 +222,15 @@ int main() {
 	printf("Running program for %d cycles\n", TIME_REPEAT);
 	uint64_t start = timestamp();
 	for (int i = 0; i < TIME_REPEAT; i ++) {
+		#ifdef TRUTH_VALUE
+		long t = aoc(f);
+		if (t != TRUTH_VALUE) {
+			printf("lost cohesion at cycle %d: %d != %d\n", i, t, TRUTH_VALUE);
+			break;
+		}
+		#else
 		aoc(f);
+		#endif
 		rewind(f);
 	}
 	uint64_t duration = timestamp() - start;

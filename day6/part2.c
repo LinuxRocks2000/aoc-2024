@@ -1,5 +1,7 @@
 #define DAY 6
 #define PART 2
+#define TIME_REPEAT 100
+#define TRUTH_VALUE 1434
 #include "../util.h"
 #define UP 0
 #define RIGHT 1
@@ -24,10 +26,15 @@ int to_guard_dir(char guard) {
 }
 
 
-int check_iloop(char* buffer, size_t guard, int guard_dir, size_t s, size_t line_size) {
+int check_iloop(char* buffer, size_t guard, int guard_dir, size_t s, size_t line_size, int preload) {
 	long moves = 0;
 	while (1) {
-		buffer[guard] = 'X';
+		if (preload) {
+			buffer[guard] = 'X';
+		}
+		else {
+			buffer[guard] = guard_dir;
+		}
 		size_t old_guard = guard;
 		if (guard_dir == DOWN) {
 			guard += line_size + 1;
@@ -42,19 +49,21 @@ int check_iloop(char* buffer, size_t guard, int guard_dir, size_t s, size_t line
 			guard -= line_size + 1;
 		}
 		if (guard < 0 || guard > s || buffer[guard] == '\n') {
-			break;
+			return 0;
 		}
 		if (buffer[guard] == '#') {
 			guard_dir ++;
 			guard_dir %= 4;
 			guard = old_guard;
 		}
+		if (buffer[guard] == guard_dir) {
+			return 1;
+		}
 		moves ++;
 		if (moves == s) {
 			return 1;
 		}
 	}
-	return 0;
 }
 
 
@@ -67,13 +76,13 @@ long aoc(FILE* f) {
 	int guard_dir = to_guard_dir(buffer[guard]);
 	size_t line_size;
 	for (line_size = 0; buffer[line_size] != '\n'; line_size ++) {}
-	check_iloop(buffer, guard, guard_dir, s, line_size); // set up the paths
+	check_iloop(buffer, guard, guard_dir, s, line_size, 1); // set up the paths
 	long ret = 0;
 	for (size_t i = 0; i < s; i ++) {
 		if (buffer[i] == 'X') {
 			memcpy(bcopy, buffer, s);
 			bcopy[i] = '#';
-			if (check_iloop(bcopy, guard, guard_dir, s, line_size)) {
+			if (check_iloop(bcopy, guard, guard_dir, s, line_size, 0)) {
 				ret ++;
 			}
 		}
