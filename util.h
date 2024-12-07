@@ -213,7 +213,7 @@ uint64_t timestamp() {
 }
 
 
-long aoc(FILE* f);
+uint64_t aoc(FILE* f);
 
 int main() {
 	FILE* f = fopen("inputs.txt", "r");
@@ -236,6 +236,6 @@ int main() {
 	uint64_t duration = timestamp() - start;
 	printf("Average duration: %dµs\n", duration / TIME_REPEAT);
 	#else
-	printf("DAY %d PART %d SOLUTION: %d\n", DAY, PART, aoc(f));
+	printf("DAY %d PART %d SOLUTION: %lu\n", DAY, PART, aoc(f));
 	#endif
 }
