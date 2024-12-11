@@ -212,8 +212,11 @@ uint64_t timestamp() {
     return tv.tv_sec*(uint64_t)1000000+tv.tv_usec;
 }
 
-
+#ifdef ULTRALONG_AOC
 uint64_t aoc(FILE* f);
+#else
+long aoc(FILE* f);
+#endif
 
 int main() {
 	FILE* f = fopen("inputs.txt", "r");
@@ -236,6 +239,10 @@ int main() {
 	uint64_t duration = timestamp() - start;
 	printf("Average duration: %dµs\n", duration / TIME_REPEAT);
 	#else
-	printf("DAY %d PART %d SOLUTION: %lu\n", DAY, PART, aoc(f));
+		#ifdef ULTRALONG_AOC
+		printf("DAY %d PART %d SOLUTION: %lu\n", DAY, PART, aoc(f));
+		#else
+		printf("DAY %d PART %d SOLUTION: %d\n", DAY, PART, aoc(f));
+		#endif
 	#endif
 }
